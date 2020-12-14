@@ -5,10 +5,6 @@
   <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <style>
-    .strike-through {
-      text-decoration-line: line-through;
-      text-decoration-thickness: 2px;
-    }
   
   </style>
   <script>
@@ -27,7 +23,7 @@
         $.each(rows, function(i, row) {
             let $table_row = $('<tr>')
                 $table_row.append(`<td style="width: 10%;"><a href="/update_task/${row.id}"><i class="material-icons">edit</i></a></td>`);
-                $table_row.append(`<td class="strike-through" style="width: 65%;">${row.task}</td>`);
+                $table_row.append(`<td style="width: 65%;">${row.task}</td>`);
                 if (row["status"]) {
                     $table_row.append(`<td class="w3-center" style="width: 15%;"><a href="/update_status/${row.id}/0"><i class="material-icons">check_box</i></a></td>`);
                 }
