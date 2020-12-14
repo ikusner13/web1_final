@@ -6,11 +6,29 @@
   <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://kit.fontawesome.com/6e36a7f304.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" type="text/css" href="/static/css/main.css">
 
 
 
   <script>
   $(document).ready(function() {
+    console.log('COOKIE',document.cookie)
+    $("#theme").click(function(){
+      console.log('clicked')
+      let existing_cookie = document.cookie
+
+      console.log(document.cookie)
+      $('body').toggleClass('dark-mode')
+
+      const theme = $("body").hasClass("dark-mode") ? 'dark' : 'light'
+      console.log('theme',theme)
+      //document.cookie += `; theme=${theme}`
+      document.cookie = `theme=${theme}`
+
+      console.log('cookie',document.cookie)
+    })
+
+
     $.getJSON("http://localhost:8080/get_tasks", function(rows) {
         let $table = $('<table class="w3-table w3-bordered w3-border">')
         let $table_header = $('<tr>')
@@ -45,7 +63,7 @@
   })
   </script>
 </head>
-<body>
+<body class="{{dict(session)['theme']}}">
 %include("header.tpl", session=session)
 <div id="content"></div>
 %include("footer.tpl", session=session)

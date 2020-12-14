@@ -7,7 +7,7 @@ import os
 
 db = dataset.connect('sqlite:///todo.db')
 
-from bottle import get, post, request, response, template, redirect, default_app
+from bottle import run, debug, static_file, get, post, request, response, template, redirect, default_app
 
 ON_PYTHONANYWHERE = "PYTHONANYWHERE_DOMAIN" in os.environ.keys()
 
@@ -18,32 +18,65 @@ else:
 
 homepage_redirect = '/show_list_ajax'
 
+@get('/static/<filename:re:.*\.css>')
+def static(filename):
+    return static_file(filename, root='static/')
+
 def get_session(request, response):
+    print('GET_SESSION')
     session_id = request.cookies.get("session_id",None)
-    print('session id',session_id)
+    #theme = request.cookies.get("theme",'light')
+    theme = ''
+    print('COOKIE session_id',session_id)
+    #print('COOKIE theme',theme)
     if session_id == None:
+        print('if')
         session_id = str(uuid.uuid4())
-        session = { 'session_id':session_id, "username":"Guest", "time":int(time.time()) }
+        session = { 'session_id':session_id, 'theme':theme, "username":"Guest", "time":int(time.time()) }
         db['session'].insert(session)
         response.set_cookie("session_id",session_id)
+        response.set_cookie("theme",theme)
+        print('theme cookie',request.get_cookie('theme'))
+        print('session id cookie',request.get_cookie('session_id'))
+
+
     else:
         session=db['session'].find_one(session_id=session_id)
+        print("SESSION FROM COOKIE", session)
+        '''if 'theme' not in session:
+            print('theme',theme)
+            db['session'].insert(dict(theme= theme))
+            session=db['session'].find_one(session_id=session_id)
+        if session['theme'] == None:
+            session['theme'] = theme'''
+
         if session == None:
             session_id = str(uuid.uuid4())
-            session = { 'session_id':session_id, "username":"Guest", "time":int(time.time()) }
+            session = { 'session_id':session_id, 'theme': theme, "username":"Guest", "time":int(time.time()) }
             db['session'].insert(session)
             response.set_cookie("session_id",session_id)
+            response.set_cookie('theme', theme)
+            print('theme cookie',request.get_cookie('theme'))
+            print('session id cookie',request.get_cookie('session_id'))
 
             # session = {"message":"no session found with the id =" + session_id}
+    theme_class = ''
+    if(theme == 'dark'):
+        theme_class = 'dark-mode'
+    session['theme'] = theme_class
+    print('session return',session)
+    print('END GET SESSION\n')
     return session
 
 def save_session(session):
+    print('save session',session)
     db['session'].update(session,['session_id'])
 
 @get('/login')
 def get_login():
     session = get_session(request, response)
-    print('login get session',session)
+    print('LOGIN GET',session)
+    print('\n')
     if session['username'] != 'Guest':
         redirect(homepage_redirect)
         return
@@ -52,7 +85,7 @@ def get_login():
 @post('/login')
 def post_login():
     session = get_session(request, response)
-    print('login post session',session)
+    print('LOGIN POST',session)
     if session['username'] != 'Guest':
         redirect(homepage_redirect)
         return
@@ -69,30 +102,36 @@ def post_login():
     if password != profile["password"]:
         redirect('/login_error')
         return
+    print('VALID LOGIN')
     session['username'] = username
     save_session(session)
+    print('\n')
     redirect(homepage_redirect)
 
 
 @get('/logout')
 def get_logout():
     session = get_session(request, response)
-    print('logout session',session)
+    print('LOGOUT',session)
     session['username'] = 'Guest'
     save_session(session)
+    print('\n')
     redirect('/login')
 
 @get('/register')
 def get_register():
+    print("REGISTER gET")
     session = get_session(request, response)
     if session['username'] != 'Guest':
         redirect(homepage_redirect)
         return
+    print('\n')
     return template("register", csrf_token="abcrsrerredadfa")
 
 @post('/register')
 def post_register():
     session = get_session(request, response)
+    print("REGISTER POST",session)
     if session['username'] != 'Guest':
         redirect(homepage_redirect)
         return
@@ -110,25 +149,30 @@ def post_register():
         redirect('/login_error')
         return
     db['profile'].insert({'username':username, 'password':password})
+    print('\n')
     redirect(homepage_redirect)
 
 
 @get('/')
 def get_show_list():
     session = get_session(request, response)
+    print('SHOW_LIST',session)
     if session['username'] == 'Guest':
         redirect('/login')
         return
     result = db['todo'].all()
     result=[dict(r) for r in result]
+    print('\n')
     return template("show_list", rows=result, session=session)
 
 @get('/show_list_ajax')
 def get_show_list_ajax():
     session = get_session(request, response)
+    print('SHOW AJAX',session)
     if session['username'] == 'Guest':
         redirect('/login')
         return
+    print('\n')
     return template("show_list_ajax", session=session)
 
 @get('/get_tasks')
