@@ -16,8 +16,11 @@ if ON_PYTHONANYWHERE:
 else:
     from bottle import run, debug
 
+homepage_redirect = '/show_list_ajax'
+
 def get_session(request, response):
     session_id = request.cookies.get("session_id",None)
+    print('session id',session_id)
     if session_id == None:
         session_id = str(uuid.uuid4())
         session = { 'session_id':session_id, "username":"Guest", "time":int(time.time()) }
@@ -40,16 +43,18 @@ def save_session(session):
 @get('/login')
 def get_login():
     session = get_session(request, response)
+    print('login get session',session)
     if session['username'] != 'Guest':
-        redirect('/')
+        redirect(homepage_redirect)
         return
     return template("login", csrf_token="abcrsrerredadfa")
 
 @post('/login')
 def post_login():
     session = get_session(request, response)
+    print('login post session',session)
     if session['username'] != 'Guest':
-        redirect('/')
+        redirect(homepage_redirect)
         return
     '''csrf_token = request.forms.get("csrf_token").strip()
     if csrf_token != "abcrsrerredadfa":
@@ -66,12 +71,13 @@ def post_login():
         return
     session['username'] = username
     save_session(session)
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/logout')
 def get_logout():
     session = get_session(request, response)
+    print('logout session',session)
     session['username'] = 'Guest'
     save_session(session)
     redirect('/login')
@@ -80,7 +86,7 @@ def get_logout():
 def get_register():
     session = get_session(request, response)
     if session['username'] != 'Guest':
-        redirect('/')
+        redirect(homepage_redirect)
         return
     return template("register", csrf_token="abcrsrerredadfa")
 
@@ -88,7 +94,7 @@ def get_register():
 def post_register():
     session = get_session(request, response)
     if session['username'] != 'Guest':
-        redirect('/')
+        redirect(homepage_redirect)
         return
     # csrf_token = request.forms.get("csrf_token").strip()
     # if csrf_token != "abcrsrerredadfa":
@@ -104,7 +110,7 @@ def post_register():
         redirect('/login_error')
         return
     db['profile'].insert({'username':username, 'password':password})
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/')
@@ -150,7 +156,7 @@ def get_update_status(id, value):
         return
     #result = db['todo'].find_one(id=id)
     db['todo'].update({'id':id, 'status':(value!=0)},['id'])
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/delete_item/<id:int>')
@@ -160,7 +166,7 @@ def get_delete_item(id):
         redirect('/login')
         return
     db['todo'].delete(id=id)
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/update_task/<id:int>')
@@ -182,7 +188,7 @@ def post_update_task():
     id = int(request.forms.get("id").strip())
     updated_task = request.forms.get("updated_task").strip()
     db['todo'].update({'id':id, 'task':updated_task},['id'])
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/new_item')
@@ -202,11 +208,11 @@ def post_new_item():
         return
     new_task = request.forms.get("new_task").strip()
     db['todo'].insert({'task':new_task, 'status':False})
-    redirect('/')
+    redirect(homepage_redirect)
 
-@get('/jquerydemo')
-def get_jquerydemo():
-    return template("jquerydemo")
+@get('/login_error')
+def get_login_error():
+    return template("login_error")
 
 
 #application = default_app()
@@ -216,8 +222,3 @@ if ON_PYTHONANYWHERE:
 else:
     debug(True)
     run(reloader=True,host="localhost", port=8080)
-
-
-'''if __name__ == "__main__":
-    #print(get_show_list())
-    get_update_task(6)'''
