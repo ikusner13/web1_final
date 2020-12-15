@@ -1,4 +1,5 @@
 <div 
+  id="footer"
   class="w3-container w3-2021-buttercream"
   style="bottom:0; position: absolute; width: 100%;"
   >

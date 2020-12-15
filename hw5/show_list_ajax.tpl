@@ -14,15 +14,11 @@
   $(document).ready(function() {
     console.log('COOKIE',document.cookie)
     $("#theme").click(function(){
-      console.log('clicked')
       let existing_cookie = document.cookie
 
-      console.log(document.cookie)
       $('body').toggleClass('dark-mode')
 
-      const theme = $("body").hasClass("dark-mode") ? 'dark' : 'light'
-      console.log('theme',theme)
-      //document.cookie += `; theme=${theme}`
+      const theme = $('body').hasClass('dark-mode') ? 'dark' : 'light'
       document.cookie = `theme=${theme}`
 
       console.log('cookie',document.cookie)
