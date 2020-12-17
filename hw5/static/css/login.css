@@ -21,31 +21,34 @@
   margin: 0 auto 100px;
   padding: 45px;
   text-align: center;
-
   box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
 }
 
 .fields {
-  display: flex;
-}
-
-.fields span {
-  line-height: 45px;
-  width: 40px;
-}
-
-input {
-  font-family: "Roboto", sans-serif;
-  outline: 0;
-  background: #e8e8e8;
+  padding-left: 10px;
   width: 100%;
-  border: 0;
-  margin: 0 0 15px;
-  padding: 15px;
-  box-sizing: border-box;
-  font-size: 14px;
+  height: 50px;
+  display: flex;
+  /*background: rgba(255, 255, 255, 0.94);*/
+  background: #e8e8e8;
   border-radius: 25px;
-  display: inline;
+}
+
+.fields i {
+  color: #222;
+  line-height: 50px;
+  margin-right: 5px;
+}
+
+.fields input {
+  height: 100%;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #222;
+  font-size: 14px;
+  font-family: "Roboto", sans-serif;
 }
 
 input[type="submit"] {
@@ -53,6 +56,7 @@ input[type="submit"] {
   text-transform: uppercase;
   outline: 0;
   background-color: var(--accent);
+  height: 50px;
   width: 100%;
   border: 0;
   padding: 15px;
@@ -63,7 +67,7 @@ input[type="submit"] {
 
 .register {
   color: #b3b3b3;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .register a {

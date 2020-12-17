@@ -16,6 +16,7 @@ body.dark-mode {
 .dark-mode #navbar,
 .dark-mode #topbar {
   background: var(--table-color);
+  color: var(--text-color);
 }
 
 body {

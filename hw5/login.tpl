@@ -13,13 +13,13 @@
         <div>
         <form action="/login" method="POST">
             <div class= "fields">
-                <span class="far fa-user"></span>
+                <i class="far fa-user"></i>
                 <input placeholder="username" type="text" size="100" maxlength="100" name="username">
             </div>
 
-            <div class="fields">
-                <span class="fas fa-key"></span>
-                <input placeholder="password" type="text" size="100" maxlength="100" name="password">
+            <div class="fields w3-margin-top w3-margin-bottom">
+                <i class="fas fa-key"></i>
+                <input placeholder="password" type="password" size="100" maxlength="100" name="password">
             </div>
 
 
