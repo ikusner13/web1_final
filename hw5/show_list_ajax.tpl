@@ -12,6 +12,8 @@
 
   <script>
   $(document).ready(function() {
+    const prefer = window.matchMedia("(prefers-color-scheme:dark)")
+    console.log('prefer', prefer)
     console.log('COOKIE',document.cookie)
     $("#theme").click(function(){
       let existing_cookie = document.cookie
@@ -26,7 +28,7 @@
 
 
     $.getJSON("http://localhost:8080/get_tasks", function(rows) {
-        let $table = $('<table class="w3-table w3-bordered w3-border">')
+        let $table = $('<table class="w3-table w3-bordered w3-border w3-margin-top">')
         let $table_header = $('<tr>')
         $table_header.append(`<th class="w3-center">Edit</th>`)
         $table_header.append(`<th>To-Do</th>`)

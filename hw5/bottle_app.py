@@ -24,7 +24,7 @@ def static(filename):
 
 def get_session(request, response):
     session_id = request.cookies.get("session_id",None)
-    theme = request.cookies.get("theme",None)
+    theme = request.cookies.get("theme",'light')
     print('SESSION ID',session_id)
     print('THEME', theme)
     if session_id == None:
@@ -32,7 +32,7 @@ def get_session(request, response):
         session = { 'session_id':session_id, 'theme':theme, "username":"Guest", "time":int(time.time()) }
         db['session'].insert(session)
         response.set_cookie("session_id",session_id)
-        response.set_cookie("theme",theme)
+        #response.set_cookie("theme",theme)
 
     else:
         session=db['session'].find_one(session_id=session_id)
@@ -49,7 +49,7 @@ def get_session(request, response):
             db['session'].insert(session)
             response.set_cookie("session_id",session_id)
             response.set_cookie('theme', theme)
-            print('theme cookie',request.get_cookie('theme'))
+            #print('theme cookie',request.get_cookie('theme'))
             print('session id cookie',request.get_cookie('session_id'))
 
     theme_class = ''
