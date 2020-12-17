@@ -24,7 +24,7 @@ def static(filename):
 
 def get_session(request, response):
     session_id = request.cookies.get("session_id",None)
-    theme = request.cookies.get("theme",'light')
+    theme = request.cookies.get("theme",None)
     print('SESSION ID',session_id)
     print('THEME', theme)
     if session_id == None:
@@ -75,6 +75,7 @@ def get_login():
 @post('/login')
 def post_login():
     session = get_session(request, response)
+    print('Session',session)
     if session['username'] != 'Guest':
         redirect(homepage_redirect)
         return
@@ -92,6 +93,10 @@ def post_login():
         redirect('/login_error')
         return
     session['username'] = username
+    #theme = 'light'
+    #if profile['theme'] is None:
+        #theme = profile['theme']
+    #session['theme'] = theme
     save_session(session)
     redirect(homepage_redirect)
 
@@ -136,6 +141,7 @@ def post_register():
 
 @get('/')
 def get_show_list():
+    redirect(homepage_redirect)
     session = get_session(request, response)
     if session['username'] == 'Guest':
         redirect('/login')
