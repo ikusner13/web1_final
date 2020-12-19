@@ -1,0 +1,49 @@
+:root {
+  --background: #ffffff;
+  --text-color: #0a244d;
+  --a-color: #1c75b9;
+}
+
+body.dark-mode {
+  --text-color: #f8f8ff;
+  --background: #121212;
+  --a-color: #03dac5;
+  --table-color: #202020;
+  --table-text-color: #e0e0e0;
+}
+
+.dark-mode #footer,
+.dark-mode #navbar,
+.dark-mode #topbar {
+  background: var(--table-color);
+  color: var(--text-color);
+}
+
+body {
+  color: var(--text-color);
+  background: var(--background);
+}
+
+body table {
+  background: var(--table-color);
+}
+
+td {
+  color: var(--table-text-color);
+}
+
+a {
+  color: var(--a-color);
+}
+
+p {
+  color: var(--a-color);
+}
+
+.dark-mode input,
+.dark-mode .cancel * {
+  box-sizing: border-box;
+  border: none;
+  background-color: var(--table-color);
+  color: var(--table-text-color);
+}

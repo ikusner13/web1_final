@@ -7,7 +7,7 @@ import os
 
 db = dataset.connect('sqlite:///todo.db')
 
-from bottle import get, post, request, response, template, redirect, default_app
+from bottle import run, debug, static_file, get, post, request, response, template, redirect, default_app
 
 ON_PYTHONANYWHERE = "PYTHONANYWHERE_DOMAIN" in os.environ.keys()
 
@@ -16,40 +16,68 @@ if ON_PYTHONANYWHERE:
 else:
     from bottle import run, debug
 
+homepage_redirect = '/show_list_ajax'
+
+@get('/static/<filename:re:.*\.css>')
+def static(filename):
+    return static_file(filename, root='static/')
+
 def get_session(request, response):
     session_id = request.cookies.get("session_id",None)
+    theme = request.cookies.get("theme",'light')
+    #print('SESSION ID',session_id)
+    #print('THEME', theme)
     if session_id == None:
         session_id = str(uuid.uuid4())
-        session = { 'session_id':session_id, "username":"Guest", "time":int(time.time()) }
+        session = { 'session_id':session_id, 'theme':theme, "username":"Guest", "time":int(time.time()) }
         db['session'].insert(session)
         response.set_cookie("session_id",session_id)
+        response.set_cookie("theme",theme)
+
     else:
         session=db['session'].find_one(session_id=session_id)
+        if session != None:
+            if 'theme' not in session:
+                db['session'].insert(dict(theme= theme))
+                session=db['session'].find_one(session_id=session_id)
+            if session['theme'] == None:
+                session['theme'] = theme
+
         if session == None:
             session_id = str(uuid.uuid4())
-            session = { 'session_id':session_id, "username":"Guest", "time":int(time.time()) }
+            session = { 'session_id':session_id, 'theme': theme, "username":"Guest", "time":int(time.time()) }
             db['session'].insert(session)
             response.set_cookie("session_id",session_id)
+            response.set_cookie('theme', theme)
+            #print('theme cookie',request.get_cookie('theme'))
+            #print('session id cookie',request.get_cookie('session_id'))
 
-            # session = {"message":"no session found with the id =" + session_id}
+    theme_class = ''
+    if(theme == 'dark'):
+        theme_class = 'dark-mode'
+    session['theme'] = theme_class
+    print('RETURN SESSION',session)
+    print('\n')
     return session
 
 def save_session(session):
+    print('save session',session)
     db['session'].update(session,['session_id'])
 
 @get('/login')
 def get_login():
     session = get_session(request, response)
     if session['username'] != 'Guest':
-        redirect('/')
+        redirect(homepage_redirect)
         return
     return template("login", csrf_token="abcrsrerredadfa")
 
 @post('/login')
 def post_login():
     session = get_session(request, response)
+    print('Session',session)
     if session['username'] != 'Guest':
-        redirect('/')
+        redirect(homepage_redirect)
         return
     '''csrf_token = request.forms.get("csrf_token").strip()
     if csrf_token != "abcrsrerredadfa":
@@ -65,8 +93,12 @@ def post_login():
         redirect('/login_error')
         return
     session['username'] = username
+    #theme = 'light'
+    #if profile['theme'] is None:
+        #theme = profile['theme']
+    #session['theme'] = theme
     save_session(session)
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/logout')
@@ -80,7 +112,7 @@ def get_logout():
 def get_register():
     session = get_session(request, response)
     if session['username'] != 'Guest':
-        redirect('/')
+        redirect(homepage_redirect)
         return
     return template("register", csrf_token="abcrsrerredadfa")
 
@@ -88,7 +120,7 @@ def get_register():
 def post_register():
     session = get_session(request, response)
     if session['username'] != 'Guest':
-        redirect('/')
+        redirect(homepage_redirect)
         return
     # csrf_token = request.forms.get("csrf_token").strip()
     # if csrf_token != "abcrsrerredadfa":
@@ -104,11 +136,12 @@ def post_register():
         redirect('/login_error')
         return
     db['profile'].insert({'username':username, 'password':password})
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/')
 def get_show_list():
+    redirect(homepage_redirect)
     session = get_session(request, response)
     if session['username'] == 'Guest':
         redirect('/login')
@@ -150,7 +183,7 @@ def get_update_status(id, value):
         return
     #result = db['todo'].find_one(id=id)
     db['todo'].update({'id':id, 'status':(value!=0)},['id'])
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/delete_item/<id:int>')
@@ -160,7 +193,7 @@ def get_delete_item(id):
         redirect('/login')
         return
     db['todo'].delete(id=id)
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/update_task/<id:int>')
@@ -170,7 +203,8 @@ def get_update_task(id):
         redirect('/login')
         return
     result = db['todo'].find_one(id=id)
-    return template("update_task", row=result)
+    print('UPDATE SESSION',session)
+    return template("update_task", row=result, session=session)
 
 
 @post('/update_task')
@@ -182,7 +216,7 @@ def post_update_task():
     id = int(request.forms.get("id").strip())
     updated_task = request.forms.get("updated_task").strip()
     db['todo'].update({'id':id, 'task':updated_task},['id'])
-    redirect('/')
+    redirect(homepage_redirect)
 
 
 @get('/new_item')
@@ -191,7 +225,8 @@ def get_new_item():
     if session['username'] == 'Guest':
         redirect('/login')
         return
-    return template("new_item")
+    print('NEW ITEM',session)
+    return template("new_item", session=session)
 
 
 @post('/new_item')
@@ -202,11 +237,11 @@ def post_new_item():
         return
     new_task = request.forms.get("new_task").strip()
     db['todo'].insert({'task':new_task, 'status':False})
-    redirect('/')
+    redirect(homepage_redirect)
 
-@get('/jquerydemo')
-def get_jquerydemo():
-    return template("jquerydemo")
+@get('/login_error')
+def get_login_error():
+    return template("login_error")
 
 
 #application = default_app()
@@ -216,8 +251,3 @@ if ON_PYTHONANYWHERE:
 else:
     debug(True)
     run(reloader=True,host="localhost", port=8080)
-
-
-'''if __name__ == "__main__":
-    #print(get_show_list())
-    get_update_task(6)'''
