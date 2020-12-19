@@ -195,7 +195,6 @@ def get_update_task(id):
         redirect('/login')
         return
     result = db['todo'].find_one(id=id)
-    print('UPDATE SESSION',session)
     return template("update_task", row=result, session=session)
 
 
