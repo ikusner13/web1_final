@@ -3,8 +3,6 @@
 <title>Todo List 0.001</title>
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 <link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet" >
-<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-colors-2021.css">
-
 </head>
 <body>
 %include("header.tpl", session=session)
