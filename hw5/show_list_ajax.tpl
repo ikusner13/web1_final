@@ -8,21 +8,40 @@
   <script src="https://kit.fontawesome.com/6e36a7f304.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" type="text/css" href="/static/css/main.css">
 
-
-
   <script>
   $(document).ready(function() {
-    const prefer = window.matchMedia("(prefers-color-scheme:dark)")
-    console.log('prefer', prefer)
     console.log('COOKIE',document.cookie)
-    $("#theme").click(function(){
-      let existing_cookie = document.cookie
+    let decoded = decodeURIComponent(document.cookie)
+    let split = decoded.split(';')
 
+    let d = (function() {
+      for(let x of split){
+        while (x.charAt(0) == ' ') {
+          x = x.substring(1);
+        }
+        if(x.startsWith("theme=")){
+          return x.substring('theme='.length, x.length)
+        }
+      }
+      return ""
+    })()
+
+    let starting_text = (d == 'dark') ? 'Light' : 'Dark'
+
+    $("#theme").text(starting_text)
+
+
+    $("#theme").click(function(){
       $('body').toggleClass('dark-mode')
 
       const theme = $('body').hasClass('dark-mode') ? 'dark' : 'light'
       document.cookie = `theme=${theme}`
 
+      let $current_theme = $("#theme").text() 
+
+      let new_text = ($current_theme == 'Light') ? 'Dark' : 'Light'
+
+      $("#theme").text(new_text)
       console.log('cookie',document.cookie)
     })
 

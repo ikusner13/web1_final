@@ -9,9 +9,9 @@
         <input type="text" size="100" maxlength="100" name="updated_task" value="{{row['task']}}"/>
         <hr/>
         <input type="submit" name="update_button" value="Update"/>
-        <a class="cancel" href="/show_list_ajax">
-          <button>Cancel</button>
-        </a>
+      <a class="cancel" href="/show_list_ajax">
+        <button>Cancel</button>
+      </a>
     </form>
 </body>
 </html>
